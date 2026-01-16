@@ -376,8 +376,8 @@
                                 <tbody>
                                     <tr>
                                         <td><input type="text" class="form-control form-control-sm" placeholder="Ej: Materia Prima"></td>
-                                        <td><input type="text" class="form-control form-control-sm mat-q" oninput="formatearMoneda(this)">
-                                        <td><input type="text" class="form-control form-control-sm mat-p" oninput="formatearMoneda(this)">
+                                        <td><input type="text" class="form-control form-control-sm mat-q" oninput="formatearMoneda(this)" onchange="calcularTodo()"></td>
+					<td><input type="text" class="form-control form-control-sm mat-p" oninput="formatearMoneda(this)" onchange="calcularTodo()"></td>
                                         <td class="mat-total">$0</td>
                                         <td><button class="btn btn-sm btn-outline-danger" onclick="eliminarFila(this)"><i class="bi bi-trash"></i></button></td>
                                     </tr>
@@ -407,8 +407,8 @@
         <tbody>
             <tr>
                 <td><input type="text" class="form-control form-control-sm" placeholder="Ej: Operario"></td>
-                <td class="col-hora"><input type="text" class="form-control form-control-sm mo-q" oninput="formatearMoneda(this)"></td>
-                <td><input type="text" class="form-control form-control-sm mo-p" oninput="formatearMoneda(this)"></td>
+                <td class="col-hora"><input type="text" class="form-control form-control-sm mo-q" oninput="formatearMoneda(this)" onchange="calcularTodo()"></td>
+		<td><input type="text" class="form-control form-control-sm mo-p" oninput="formatearMoneda(this)" onchange="calcularTodo()"></td>
                 <td class="mo-total">$0</td>
                 <td><button class="btn btn-sm btn-outline-danger" onclick="eliminarFila(this)"><i class="bi bi-trash"></i></button></td>
             </tr>
@@ -554,16 +554,20 @@
 
             nuevaFila.innerHTML = `
                 <td><input type="text" class="form-control form-control-sm" placeholder="${esManoObra ? 'Ej: Operario' : ''}"></td>
+                
                 <td class="${claseCeldaExtra}" ${estiloOculto}>
-                    <input type="number" class="form-control form-control-sm ${clase}-q" value="${valorInicialQ}" onchange="calcularTodo()">
+                    <input type="text" class="form-control form-control-sm ${clase}-q" value="${valorInicialQ}" oninput="formatearMoneda(this)" onchange="calcularTodo()">
                 </td>
+                
                 <td>
-                    <input type="number" class="form-control form-control-sm ${clase}-p" placeholder="${placeholderPrecio}" oninput="formatearMoneda(this)">
+                    <input type="text" class="form-control form-control-sm ${clase}-p" placeholder="${placeholderPrecio}" oninput="formatearMoneda(this)" onchange="calcularTodo()">
                 </td>
+                
                 <td class="${clase}-total">$0</td>
-                <td><button class="btn btn-sm btn-outline-danger" onclick="eliminarFila(this)"><i class="bi bi-trash"></i></button></td>`;
+                <td><button class="btn btn-sm btn-outline-danger" onclick="eliminarFila(this)"><i class="bi bi-trash"></i></button></td>
+            `;
+            }
         }
-    }
 
     function eliminarFila(btn) {
         btn.closest('tr').remove();
@@ -610,16 +614,28 @@
     
     // 1. Formatea visualmente el input mientras escribes (Ej: 1000 -> 1.000)
     function formatearMoneda(input) {
-        // Elimina cualquier caracter que no sea número
-        let valor = input.value.replace(/\D/g, '');
+        // 1. Guardar la posición del cursor para que no salte al final al editar
+        let start = input.selectionStart;
+        let oldLength = input.value.length;
+
+        // 2. Limpiar todo lo que no sea número (elimina puntos previos y letras)
+        let valorLimpio = input.value.replace(/\D/g, '');
         
-        if (valor === '') {
+        if (valorLimpio === '') {
             input.value = '';
         } else {
-            // Aplica formato Chile (puntos en miles)
-            input.value = new Intl.NumberFormat('es-CL').format(valor);
+            // 3. Aplicar formato Chile (Puntos para miles)
+            // Esto soluciona tu problema de comas: es-CL usa puntos para miles.
+            input.value = new Intl.NumberFormat('es-CL').format(valorLimpio);
         }
-        calcularTodo(); // Recalcula inmediatamente
+
+        // 4. Recalcular inmediatamente
+        calcularTodo();
+        
+        // Ajuste inteligente del cursor (opcional, para mejor experiencia de usuario)
+        let newLength = input.value.length;
+        start = start + (newLength - oldLength);
+        try { input.setSelectionRange(start, start); } catch(e){} 
     }
 
     // 2. Limpia el formato para poder calcular (Ej: "1.000" -> 1000)
