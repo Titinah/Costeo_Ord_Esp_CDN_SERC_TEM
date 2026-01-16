@@ -654,13 +654,31 @@
         return parseFloat(input.value.replace(/\./g, '')) || 0;
     }
 
+        // Función auxiliar para leer números formateados (con puntos)
+    function obtenerValorNumerico(input) {
+        if (!input || !input.value) return 0;
+        
+        // 1. Obtener el valor actual
+        let valor = input.value;
+        
+        // 2. Eliminar TODOS los puntos de miles (Ej: "1.500" -> "1500")
+        valor = valor.replace(/\./g, '');
+        
+        // 3. (Opcional de seguridad) Cambiar coma por punto si se ingresaran decimales
+        valor = valor.replace(',', '.');
+        
+        // 4. Devolver el número puro
+        return parseFloat(valor) || 0;
+    }
+
     function calcularTodo() {
+	const fmt = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
         let totalMat = 0, totalMO = 0, totalCIF = 0;
 
         // Calcular Materiales
         document.querySelectorAll('#tablaMateriales tbody tr').forEach(tr => {
-            const q = parseFloat(tr.querySelector('.mat-q').value || 0);
-            const p = obtenerValor(tr.querySelector('.mat-p'));
+            const q = obtenerValorNumerico(tr.querySelector('.mat-q')); 
+            const p = obtenerValorNumerico(tr.querySelector('.mat-p'));
             const sub = q * p;
             totalMat += sub;
             tr.querySelector('.mat-total').innerText = fmt.format(sub);
@@ -668,8 +686,8 @@
 
         // Calcular Mano de Obra
         document.querySelectorAll('#tablaManoObra tbody tr').forEach(tr => {
-            const q = parseFloat(tr.querySelector('.mo-q').value || 0);
-            const p = obtenerValor(tr.querySelector('.mo-p'));
+            const q = obtenerValorNumerico(tr.querySelector('.mo-q'));
+            const p = obtenerValorNumerico(tr.querySelector('.mo-p'));
             const sub = q * p;
             totalMO += sub;
             tr.querySelector('.mo-total').innerText = fmt.format(sub);
@@ -677,12 +695,13 @@
 
         // Calcular CIF
         document.querySelectorAll('.cif-v').forEach(input => {
-            totalCIF += obtenerValor(input);
+            totalCIF += obtenerValorNumerico(input);
         });
 
         const costoTotalOrden = totalMat + totalMO + totalCIF;
-        const cantidadUnidades = parseFloat(document.getElementById('cantidad').value || 1);
-        const costoUnitario = costoTotalOrden / cantidadUnidades;
+	const inputCantidad = document.getElementById('cantidad');
+        const cantidadUnidades = inputCantidad.type === 'text' ? obtenerValorNumerico(inputCantidad) : (parseFloat(inputCantidad.value) || 1);
+        const costoUnitario = costoTotalOrden / (cantidadUnidades || 1);
         
         // Lógica de Margen según requerimiento: Costo Unitario / (1 - Margen%)
         const mDeseado = (parseFloat(document.getElementById('margenDeseado').value || 0)) / 100;
@@ -827,5 +846,4 @@
 
 </script>
 </body>
-
 </html>
