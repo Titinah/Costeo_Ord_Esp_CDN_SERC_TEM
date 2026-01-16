@@ -376,8 +376,8 @@
                                 <tbody>
                                     <tr>
                                         <td><input type="text" class="form-control form-control-sm" placeholder="Ej: Materia Prima"></td>
-                                        <td><input type="text" class="form-control form-control-sm mat-q" oninput="formatearMoneda(this)" onchange="calcularTodo()"></td>
-					<td><input type="text" class="form-control form-control-sm mat-p" oninput="formatearMoneda(this)" onchange="calcularTodo()"></td>
+                                        <td><input type="text" class="form-control form-control-sm mat-q" placeholder="Ej: 5" oninput="formatearMoneda(this)" onchange="calcularTodo()"></td>
+					<td><input type="text" class="form-control form-control-sm mat-p" placeholder="Ej: 1.500" oninput="formatearMoneda(this)" onchange="calcularTodo()"></td>
                                         <td class="mat-total">$0</td>
                                         <td><button class="btn btn-sm btn-outline-danger" onclick="eliminarFila(this)"><i class="bi bi-trash"></i></button></td>
                                     </tr>
@@ -407,8 +407,8 @@
         <tbody>
             <tr>
                 <td><input type="text" class="form-control form-control-sm" placeholder="Ej: Operario"></td>
-                <td class="col-hora"><input type="text" class="form-control form-control-sm mo-q" oninput="formatearMoneda(this)" onchange="calcularTodo()"></td>
-		<td><input type="text" class="form-control form-control-sm mo-p" oninput="formatearMoneda(this)" onchange="calcularTodo()"></td>
+                <td class="col-hora"><input type="text" class="form-control form-control-sm mo-q" placeholder="Ej: 8" oninput="formatearMoneda(this)" onchange="calcularTodo()"></td>
+		<td><input type="text" class="form-control form-control-sm mo-p" placeholder="Ej: 3.000" oninput="formatearMoneda(this)" onchange="calcularTodo()"></td>
                 <td class="mo-total">$0</td>
                 <td><button class="btn btn-sm btn-outline-danger" onclick="eliminarFila(this)"><i class="bi bi-trash"></i></button></td>
             </tr>
@@ -424,7 +424,7 @@
                                 <tbody>
                                     <tr>
                                         <td><input type="text" class="form-control form-control-sm" placeholder="Ej: Gasto Básico"></td>
-                                        <td><input type="text" class="form-control form-control-sm cif-v" oninput="formatearMoneda(this)"></td>
+                                        <td><input type="text" class="form-control form-control-sm cif-v" placeholder="Ej: 10.000" oninput="formatearMoneda(this)"></td>
                                         <td><button class="btn btn-sm btn-outline-danger" onclick="eliminarFila(this)"><i class="bi bi-trash"></i></button></td>
                                     </tr>
                                 </tbody>
@@ -539,8 +539,8 @@
         const tabla = document.getElementById(tablaId).getElementsByTagName('tbody')[0];
         const nuevaFila = tabla.insertRow();
         if(tablaId === 'tablaCIF') {
-            nuevaFila.innerHTML = `<td><input type="text" class="form-control form-control-sm"></td>
-                                   <td><input type="text" class="form-control form-control-sm cif-v" oninput="formatearMoneda(this)"></td>
+            nuevaFila.innerHTML = `<td><input type="text" class="form-control form-control-sm" placeholder="${tablaCIF ? 'Ej: Gasto Básico' : ''}"></td>
+                                   <td><input type="text" class="form-control form-control-sm cif-v" placeholder="Ej: 10.000" oninput="formatearMoneda(this)"></td>
                                    <td><button class="btn btn-sm btn-outline-danger" onclick="eliminarFila(this)"><i class="bi bi-trash"></i></button></td>`;
         } else {
             const clase = tablaId === 'tablaMateriales' ? 'mat' : 'mo';
@@ -550,17 +550,26 @@
             const estiloOculto = esModoFijo ? 'style="display: none;"' : '';
             const valorInicialQ = esModoFijo ? '1' : '';
             const claseCeldaExtra = esManoObra ? 'col-hora' : ''; 
-            const placeholderPrecio = esModoFijo ? 'Monto Total' : '';
+            const phDesc = esManoObra ? 'Ej: Operario' : 'Ej: Materia Prima';
+
+	    let phCant = '';
+            if (!esManoObra) phCant = 'Ej: 5'; 
+            else if (!esModoFijo) phCant = 'Ej: 8';
+
+	    let phPrecio = '';
+            if (esModoFijo) phPrecio = 'Monto Total';
+            else if (!esManoObra) phPrecio = 'Ej: 1.500';
+            else phPrecio = 'Ej: 3.000';
 
             nuevaFila.innerHTML = `
-                <td><input type="text" class="form-control form-control-sm" placeholder="${esManoObra ? 'Ej: Operario' : ''}"></td>
+		<td><input type="text" class="form-control form-control-sm" placeholder="${phDesc}"></td>
                 
                 <td class="${claseCeldaExtra}" ${estiloOculto}>
-                    <input type="text" class="form-control form-control-sm ${clase}-q" value="${valorInicialQ}" oninput="formatearMoneda(this)" onchange="calcularTodo()">
+                    <input type="text" class="form-control form-control-sm ${clase}-q" value="${valorInicialQ}" placeholder="${phCant}" oninput="formatearMoneda(this)" onchange="calcularTodo()">
                 </td>
                 
                 <td>
-                    <input type="text" class="form-control form-control-sm ${clase}-p" placeholder="${placeholderPrecio}" oninput="formatearMoneda(this)" onchange="calcularTodo()">
+                    <input type="text" class="form-control form-control-sm ${clase}-p" placeholder="${phPrecio}" oninput="formatearMoneda(this)" onchange="calcularTodo()">
                 </td>
                 
                 <td class="${clase}-total">$0</td>
@@ -602,7 +611,7 @@
                     // Modo Horas: Mostramos horas y restauramos valor
                     tdHora.style.display = 'table-cell';
                     if(inputQ.dataset.oldVal) inputQ.value = inputQ.dataset.oldVal;
-                    if(inputP) inputP.placeholder = "$";
+                    if(inputP) inputP.placeholder = "Ej: 3.000";
                 }
             }
         });
