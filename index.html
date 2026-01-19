@@ -326,7 +326,7 @@
                 <h5 class="card-header-custom ps-0 pt-0 mb-3"><i class="bi bi-info-circle"></i> Información de la Orden</h5>
                 <div class="mb-3">
                     <label class="form-label small fw-bold text-uppercase">Nombre del Producto</label>
-                    <input type="text" id="detalle" class="form-control" placeholder="Ej: Mesa de Roble">
+                    <input type="text" id="detalle" class="form-control" placeholder="Ej: Mesa de Pino">
                 </div>
                 <div class="row">
                     <div class="col-6 mb-3">
@@ -461,8 +461,17 @@
                                         <div class="col-5 text-end" id="resIVA">$0</div>
                                     </div>
                                     <div class="row text-start pt-2">
-                                        <div class="col-7 h5 fw-bold text-primary">PRECIO FINAL CLIENTE:</div>
+                                        <div class="col-7 h5 fw-bold text-primary">PRECIO SUGERIDO CLIENTE:</div>
+                                        
                                         <div class="col-5 h5 fw-bold text-primary text-end" id="resPrecioFinal">$0</div>
+                                    </div>
+                                    <div class="text-start mt-1">
+                                        <a class="small text-decoration-none dropdown-toggle" data-bs-toggle="collapse" href="#collapseEstimacion" role="button" aria-expanded="false" aria-controls="collapseEstimacion" style="color: var(--sercotec-blue);">
+                                            Info
+                                        </a>
+                                        <div class="collapse" id="collapseEstimacion">
+                                            <div class="small text-muted mt-1">* Estimación de Precio basada exclusivamente en Costos.</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
